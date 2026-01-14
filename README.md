@@ -8,10 +8,6 @@
 [![License](https://img.shields.io/github/license/fardhanrasya/dream-journal?color=a78bfa&labelColor=333&style=flat-square)](LICENSE)
 [![Go](https://img.shields.io/badge/Maintained%20with-Go-00ADD8?style=flat-square&logo=go)](https://golang.org/)
 
-<p align="center">
-  <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjRybHpmNjZ6aW53aW53aW53aW53aW53aW53aW53aW53aW53aQ/LMc7w0qQy0qQy0qQ/giphy.gif" alt="Dream TUI" width="600" />
-</p>
-
 *A minimal, blazing fast CLI tool to record, manage, and explore your dreams from the comfort of your terminal.*
 
 [Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [TUI Mode](#-interactive-tui) • [Contributing](#-contributing)
