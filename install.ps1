@@ -1,33 +1,40 @@
 $ErrorActionPreference = "Stop"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $Repo = "fardhanrasya/dream-journal"
 $AppName = "dream"
 $InstallDir = "$env:USERPROFILE\.dream-journal"
 $BinDir = "$InstallDir\bin"
 
-# Get latest release info
-Write-Host "Fetching latest release information..."
-$ReleasesUrl = "https://api.github.com/repos/$Repo/releases/latest"
-$Release = Invoke-RestMethod -Uri $ReleasesUrl
-
-$Version = $Release.tag_name
-Write-Host "Latest version: $Version"
-
 # Determine Architecture
 $Arch = if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") { "x86_64" } else { "arm64" } # Simplification, mostly x64 on Windows
-$AssetPattern = "*Windows_$Arch.zip"
 
-# Find asset
-$Asset = $Release.assets | Where-Object { $_.name -like $AssetPattern } | Select-Object -First 1
+try {
+    # Get latest release info
+    Write-Host "Fetching latest release information..."
+    $ReleasesUrl = "https://api.github.com/repos/$Repo/releases/latest"
+    $Release = Invoke-RestMethod -Uri $ReleasesUrl
+    $Version = $Release.tag_name
+    Write-Host "Latest version: $Version"
 
-if (-not $Asset) {
-    Write-Error "Could not find a release asset for Windows $Arch"
+    $AssetPattern = "*Windows_$Arch.zip"
+    $Asset = $Release.assets | Where-Object { $_.name -like $AssetPattern } | Select-Object -First 1
+
+    if (-not $Asset) {
+        throw "Could not find a release asset for Windows $Arch"
+    }
+    $DownloadUrl = $Asset.browser_download_url
+}
+catch {
+    Write-Warning "Unable to connect to GitHub API or find asset. Attempting direct download fallback."
+    $Version = "latest"
+    $DownloadUrl = "https://github.com/$Repo/releases/latest/download/dream-journal_Windows_$Arch.zip"
 }
 
 # Download
 $ZipPath = "$env:TEMP\dream_journal.zip"
-Write-Host "Downloading $($Asset.browser_download_url)..."
-Invoke-WebRequest -Uri $Asset.browser_download_url -OutFile $ZipPath
+Write-Host "Downloading $DownloadUrl..."
+Invoke-WebRequest -Uri $DownloadUrl -OutFile $ZipPath
 
 # Install
 Write-Host "Installing to $BinDir..."
